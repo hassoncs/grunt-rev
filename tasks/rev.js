@@ -32,14 +32,18 @@ module.exports = function(grunt) {
     this.files.forEach(function(filePair) {
       filePair.src.forEach(function(f) {
 
-        var hash = md5(f, options.algorithm, 'hex', options.encoding),
-          prefix = hash.slice(0, options.length),
-          renamed = [prefix, path.basename(f)].join('.'),
-          outPath = path.resolve(path.dirname(f), renamed);
+        if(fs.lstatSync(f).isFile()){
+          var hash = md5(f, options.algorithm, 'hex', options.encoding),
+            prefix = hash.slice(0, options.length),
+            renamed = [prefix, path.basename(f)].join('.'),
+            outPath = path.resolve(path.dirname(f), renamed);
 
-        grunt.verbose.ok().ok(hash);
-        fs.renameSync(f, outPath);
-        grunt.log.write(f + ' ').ok(renamed);
+          grunt.verbose.ok().ok(hash);
+          fs.renameSync(f, outPath);
+          grunt.log.write(f + ' ').ok(renamed);
+        } else {
+          grunt.log.write('Skipped directory: '+f);
+        }
 
       });
     });
